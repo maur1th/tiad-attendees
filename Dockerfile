@@ -2,6 +2,12 @@ from debian:jessie
 
 MAINTAINER Laurent Bernaille <laurent.bernaille@d2-si.eu>
 
+ARG version
+
+ADD Dockerfile /Dockerfile
+LABEL eu.d2-si.application="attendees"
+LABEL eu.d2-si.version="${version}"
+
 COPY scripts/install_packages.sh /tmp/
 RUN /tmp/install_packages.sh
 
