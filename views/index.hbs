@@ -1,44 +1,4 @@
 <!DOCTYPE html>
-<?php
-set_include_path(dirname(__FILE__) . '/../');
-
-require 'vendor/autoload.php';
-use Aws\DynamoDb\DynamoDbClient;
-use Aws\DynamoDb\Exception\DynamoDbException;
-
-$props = parse_ini_file("application.properties");
-
-# Initialize DynamoDB client
-$params=array('region' => $props['region']);
-if (isset($props['endpoint'])) {
-    $params['endpoint']=$props['endpoint'];
-}
-if (isset($props['key']) && isset($props['secret'])) {
-    $params['credentials'] = array( 
-        'key' => $props['key'],
-        'secret' => $props['secret']
-    );
-}
-$client = DynamoDbClient::factory($params);
-
-try {
-    $result = $client->describeTable(array('TableName' => $props['ddbtable'] ));
-} catch (DynamoDbException $e) {
-    #echo $e->getMessage() . "\n";
-    exit ("Table ".$props['ddbtable']." does not exists\n");
-}
-
-$iterator = $client->getIterator('Scan', array( 'TableName' => $props['ddbtable'] ));
-$first=array();
-$last=array();
-foreach ($iterator as $item) {
-  array_push($first,ucfirst(strtolower($item['firstname']['S'])));
-  array_push($last,ucfirst(strtolower($item['lastname']['S'])));
-}
-array_multisort($last,SORT_ASC, SORT_STRING,$first)
-?>
-
-
 <html lang="en">
 
 <head>
@@ -118,7 +78,7 @@ array_multisort($last,SORT_ASC, SORT_STRING,$first)
                 </div>
             </div>
         </div>
-    </header>   
+    </header>
 
     <!-- About Section -->
     <section class="success" id="about">
@@ -131,10 +91,12 @@ array_multisort($last,SORT_ASC, SORT_STRING,$first)
             </div>
             <div class="row">
                 <div class="col-lg-4 col-lg-offset-2">
-                    <p>#TIAD is the first event dedicated to Automation in France! Made for Developers and Operations Engineers, this event aims to provide a forum for discussion and exchange of ideas on Automation & Innovation.</p>
+                    <p>#TIAD is the first event dedicated to Automation in France! Made for Developers and Operations Engineers,
+                        this event aims to provide a forum for discussion and exchange of ideas on Automation & Innovation.</p>
                 </div>
                 <div class="col-lg-4">
-                    <p>During this day, you'll enjoy Keynotes from famous Automation actors, workshops, presentations & demos from valuable experts and hand-on-labs to practice.</p>
+                    <p>During this day, you'll enjoy Keynotes from famous Automation actors, workshops, presentations & demos
+                        from valuable experts and hand-on-labs to practice.</p>
                 </div>
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <p><br>Come and join us to define the IT of tomorrow!</p>
@@ -148,19 +110,20 @@ array_multisort($last,SORT_ASC, SORT_STRING,$first)
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2>Attendees (<?php echo count($first);?>)</h2>
+                    <h2>Attendees ({{count}})</h2>
                     <hr class="star-primary">
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2">
-                   <table class="table table-striped">
-<?php
-for ($i=0;$i<count($first);$i++){
-  echo '<tr><td>'.$first[$i].'</td><td>'.$last[$i]."</td></tr>\n";
-}
-?>
-                   </table>
+                    <table class="table table-striped">
+                        {{#attendees}}
+                        <tr>
+                            <td>{{firstname}}</td>
+                            <td>{{lastname}}</td>
+                        </tr>
+                        {{/attendees}}
+                    </table>
                 </div>
             </div>
         </div>
@@ -197,7 +160,7 @@ for ($i=0;$i<count($first);$i++){
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        Copyright &copy; TIAD 2015 / Environment: <?= $props['environment'] ?> / Version: <?= $props['version'] ?>
+                        Copyright &copy; TIAD 2015 / Version: {{version}}
                     </div>
                 </div>
             </div>

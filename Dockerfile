@@ -1,24 +1,24 @@
-from debian:jessie
+FROM node:6
 
-MAINTAINER Laurent Bernaille <laurent.bernaille@d2-si.eu>
+MAINTAINER Thomas Maurin <thomas.maurin@d2-si.eu>
 
 ARG version
 
-ADD Dockerfile /Dockerfile
 LABEL eu.d2-si.application="attendees"
 LABEL eu.d2-si.version="${version}"
 
-COPY scripts/install_packages.sh /tmp/
-RUN /tmp/install_packages.sh
+# Install yarn to handle npm dependencies
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+        && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+        && apt-get update && apt-get install -y \
+                yarn \
+        && rm -rf /var/lib/apt/lists/*
 
-COPY site/composer.json /tmp/composer.json
-COPY scripts/install_php_archives.sh /tmp/install_php_archives.sh
-RUN /tmp/install_php_archives.sh
+RUN yarn global add forever
 
-COPY site /tmp/html
-COPY scripts/config_site.sh /tmp/
-RUN /tmp/config_site.sh
+WORKDIR /app
+COPY . /app/
+RUN yarn install
 
 EXPOSE 80
-
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["forever", "/app"]
