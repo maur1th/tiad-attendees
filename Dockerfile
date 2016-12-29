@@ -21,4 +21,4 @@ COPY . /app/
 RUN yarn install
 
 EXPOSE 80
-CMD ["forever", "/app"]
+CMD ["forever", "--workingDir", "/app", "."]
