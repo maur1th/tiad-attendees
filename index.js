@@ -35,6 +35,6 @@ app.get('/', (req, res) => {
 })
 
 // Server
-app.listen(80, function () {
-  console.log('Attendee app listening on port 80!')
+app.listen(3000, function () {
+  console.log('Attendee app listening on port 3000!')
 })
