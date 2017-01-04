@@ -26,11 +26,7 @@ app.set('view engine', 'hbs')
 app.get('/', (req, res) => {
   return Attendee.findAll()
     .then(attendees => {
-      res.render('index', {
-        count: attendees.length,
-        attendees: attendees.map(a => ({firstname: a.firstname, lastname: a.lastname})),
-        version: pjson.version,
-      })
+      res.json({error: 500})
     })
 })
 
