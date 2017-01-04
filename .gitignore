@@ -1,0 +1,13 @@
+# Terraform
+*.tfstate*
+
+# Vagrant
+.vagrant
+
+# Ansible
+*.retry
+*.log
+
+# Node
+node_modules
+*.lock
